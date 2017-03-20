@@ -3,14 +3,24 @@ var app = express();
 var fs = require("fs");
 var bodyParser = require('body-parser');
 
+var configs = require('./configs.json');
+
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
-app.get('/listSome', function (req, res) {
-  console.log("GET /listSome");
-  res.end('[{"something":"anything"}]');
+app.get('/listFolder', function (req, res) {
+  fs.readdir(configs.dir, (err, files) => {
+    var allFiles = {};
+    files.forEach(file => {
+      var path = configs.dir + '/' + file;
+      if (fs.lstatSync(path).isDirectory()) {
+        allFiles[file] = path;
+      }
+    });
+    res.end(JSON.stringify(allFiles));
+  })
 });
 
 app.post('/addSome', function (req, res) {
