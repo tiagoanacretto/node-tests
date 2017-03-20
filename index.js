@@ -23,6 +23,20 @@ app.get('/listFolder', function (req, res) {
   })
 });
 
+app.get('/listFiles', function(req, res) {
+  var path = req.query.path;
+  fs.readdir(path, (err, files) => {
+    var allFiles = [];
+    files.forEach(file => {
+      var fullPath = configs.dir + '/' + file;
+      if (fs.lstatSync(path).isFile()) {
+        allFiles.push(fullPath);
+      }
+    });
+    res.end(JSON.stringify(allFiles));
+  });
+});
+
 app.post('/addSome', function (req, res) {
   console.log('POST addSome')
   console.log(req.body);
